@@ -118,6 +118,7 @@ endif()
 
 find_package(Libsodium 1.0.12 REQUIRED)
 find_package(Libqrencode REQUIRED)
+find_package(ZLIB REQUIRED)
 
 if(APPLE)
 	set(CMAKE_MACOSX_RPATH TRUE)
@@ -146,6 +147,12 @@ else (Libqrencode_FOUND)
 	message(STATUS "Could not find LibQREncode, disabling QR Code features.")
 	SET(OPENMITTSU_CONFIG_HAVE_LIBQRENCODE OFF)
 endif(Libqrencode_FOUND)
+
+if (ZLIB_FOUND)
+	include_directories(${ZLIB_INCLUDE_DIRS})
+else ()
+	message(SEND_ERROR "Can not build OpenMittsu without zlib.")
+endif ()
 
 # Add base folder for better inclusion paths
 include_directories("${PROJECT_SOURCE_DIR}")
@@ -556,6 +563,7 @@ endif(MSVC)
 
 # Add target link dependencies
 target_link_libraries(openMittsuCore ${Libsodium_LIBRARIES})
+target_link_libraries(openMittsuCore ${ZLIB_LIBRARIES})
 
 if (OPENMITTSU_CONFIG_HAVE_LIBQRENCODE)
 	target_link_libraries(openMittsu ${Libqrencode_LIBRARIES})
